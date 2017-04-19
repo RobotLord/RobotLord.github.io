@@ -1,0 +1,86 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <string>
+
+
+using namespace std;
+using namespace cv;
+
+class Histogram{
+
+private:
+	Mat image; //source image
+	int hisSize[1], hisWidth, hisHeight;
+	Mat channelsRGB[3]; //channels
+	MatND outputRGB[3];
+	float range[2];
+	const float* ranges;
+
+
+public:
+	Histogram(){
+		hisSize[0] = 256;
+		hisWidth = 400;
+		hisHeight = 400;
+		range[0] = 0.0;
+		range[1] = 255.0;
+		ranges = &range[0];
+
+	}
+	//~Histogram();
+	
+	bool importImage(String path){
+		image = imread(path);
+		if(!image.data)
+			return false;
+		return true;
+	}
+
+	void splitChannels(){
+		split(image, channelsRGB);
+	}
+
+	void getHistogram(){
+		calcHist(&channelsRGB[0], 1, 0, Mat(), outputRGB[0], 1, hisSize, &ranges);
+		calcHist(&channelsRGB[1], 1, 0, Mat(), outputRGB[1], 1, hisSize, &ranges);
+		calcHist(&channelsRGB[2], 1, 0, Mat(), outputRGB[2], 1, hisSize, &ranges);
+		//cout << hisSize[0] << endl;
+		showHistogarm(outputRGB[2]);//图形显示 
+		for(int i = 0; i < hisSize[0]; i++){
+			cout << i << "	B:" << outputRGB[0].at<float>(i);
+			cout << "	G:" << outputRGB[1].at<float>(i);
+			cout << "	R:" << outputRGB[2].at<float>(i) << endl;
+
+		}
+
+	}
+
+
+
+	
+
+	
+
+
+
+
+};
+
+
+
+int main(){
+	String path = "/home/victor/code/Histogram/pic1.jpg";
+	Histogram hist;
+	if(!hist.importImage(path)){
+		cout << "Import Error!!" << endl;
+		return -1;
+	}
+	
+	hist.splitChannels();
+	hist.getHistogram();
+
+
+
+
+
+}
